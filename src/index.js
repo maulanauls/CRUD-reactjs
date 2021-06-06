@@ -1,10 +1,10 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import './index.css';
 import App from './App';
 import Store from "./state/store";
 import Restore from "./state/restore";
 import reportWebVitals from './reportWebVitals';
+import './index.css';
 
 ReactDOM.render(
   <Store>

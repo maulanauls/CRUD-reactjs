@@ -16,7 +16,7 @@ import {
   ROLE,
 } from "baseui/modal";
 import { KIND as ButtonKind } from "baseui/button";
-import user_action from "../state/actions/user.action";
+// import user_action from "../state/actions/user.action";
 import React, { useContext, useState, useEffect } from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import { FormControl } from "baseui/form-control";
@@ -24,6 +24,7 @@ import { Input } from "baseui/input";
 import { ListItem, ListItemLabel, ARTWORK_SIZES } from "baseui/list";
 import { Context } from "../state/store";
 import { SnackbarProvider, useSnackbar, DURATION } from "baseui/snackbar";
+import keyError from "../helper/keyError";
 
 const engine = new Styletron();
 const Centered = styled("div", {
@@ -51,11 +52,34 @@ function UserTable() {
   const [progress, setIsProgress] = useState(false);
   const [user, userFetch] = useState([]);
   const [detail, setDetail] = useState({});
+  const [error, setError] = useState({});
   const [popupopen, popup] = useState(false);
   const [createpopuptrigger, createpopup] = useState(false);
   const [popup_progress, progress_pop] = useState(false);
   const [form, setForm] = useState({});
   const classes = useStyles();
+
+  const validate = () => {
+    const schema = {
+      username: {
+        require: () => (!!form?.userName ? "" : `username is require`),
+      },
+      account_number: {
+        require: () =>
+          !!form?.accountNumber ? "" : `account number is require`,
+      },
+      identity_number: {
+        require: () =>
+          !!form?.identityNumber ? "" : `identity number is require`,
+      },
+      email_address: {
+        require: () => (!!form?.emailAddress ? "" : `email is require`),
+      },
+    };
+    let error = keyError(schema);
+    setError(error);
+    return error;
+  };
 
   const getById = (value) => {
     progress_pop(true);
@@ -142,6 +166,7 @@ function UserTable() {
   const saveBy = () => {
     let param = form;
     if (!param._id) {
+      if (!!validate()) return;
       http
         .post("/register/user", param)
         .then(({ data }) => {
@@ -383,13 +408,18 @@ function UserTable() {
         >
           <ModalHeader>Form user</ModalHeader>
           <ModalBody>
-            <FormControl label={() => "username"} caption={() => "user name"}>
+            <FormControl
+              error={!!error ? error.username : ""}
+              label={() => "username"}
+              caption={() => "user name"}
+            >
               <Input
                 onChange={(e) => changeInput("userName", e)}
                 value={form.userName}
               />
             </FormControl>
             <FormControl
+              error={!!error ? error.account_number : ""}
               label={() => "account number"}
               caption={() => "account number is required"}
             >
@@ -399,6 +429,7 @@ function UserTable() {
               />
             </FormControl>
             <FormControl
+              error={!!error ? error.identity_number : ""}
               label={() => "identity number"}
               caption={() => "identity number is required"}
             >
@@ -408,6 +439,7 @@ function UserTable() {
               />
             </FormControl>
             <FormControl
+              error={!!error ? error.email_address : ""}
               label={() => "email address"}
               caption={() => "email address is required"}
             >
