@@ -2,13 +2,17 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import './index.css';
 import App from './App';
+import Store from "./state/store";
+import Restore from "./state/restore";
 import reportWebVitals from './reportWebVitals';
 
 ReactDOM.render(
-  <React.StrictMode>
-    <App />
-  </React.StrictMode>,
-  document.getElementById('root')
+  <Store>
+    <Restore>
+      <App/>
+    </Restore>
+  </Store>,
+  document.getElementById("root")
 );
 
 // If you want to start measuring performance in your app, pass a function
